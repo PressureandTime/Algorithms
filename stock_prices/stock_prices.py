@@ -1,110 +1,77 @@
-# #!/usr/bin/python
+#!/usr/bin/python
+
+"""
+******** Polya ********
+1) Understand the problem
+----------------------
+
+What is our input?
+• We recieve a list of integers
+
+What are our restrictions?
+• We have to buy first before we can sell
+
+What does the function return?
+• Maximum profit between a buy and sell as an integer.
+
+How can we define a buy?
+• A Buy index is a price that is in an index before the sell, and it can be greater than the sell price.
+
+How can we define a sell?
+• A Sell must be after a Buy price, and it can be less than the buy price making a loss.
+
+2) Plan
+----
+
+[10, 7, 5, 8, 11, 9]
+
+• We need to keep track of the temp_min as the Buy
+• We need to keep track of the temp_max as the Sell
+• We need to keep track of the max_profit_so_far which is based on Sell - Buy
+• Loop through the list
+• If the value in the current index is less than min
+      • temp_min = prices[i] - 10, 7, 5, 2
+      • temp_max = 0 - reset this value until next iteration of the loop
+• Else if the value in the current index is greater than min and greater than the max
+      • max = prices[i]
+      • max_profit_so_far = temp_max - temp_min
+
+3) Execute the plan
+-------------------
+"""
 
 import argparse
 
-
 def find_max_profit(prices):
-  index_of_smallest = 0
-  index_of_biggest = 0
+# Let's initialise our variables
+  # We'll init temp_min as the first index
+  temp_min = prices[0]
+  # The sell comes after the buy so we init prices[1]
+  temp_max = prices[1]
+  # Initatilising our current buy and sell
+  max_profit_so_far = temp_max - temp_min
 
-  elements = len(prices)
-  for i in range(elements):
-    if prices[i] < prices[index_of_smallest]:
-      index_of_smallest = i
-    elif prices[i] > prices[index_of_biggest]:
-      index_of_biggest = i
-
-
-
-
-
-if __name__ == "__main__":
-    # This is just some code to accept inputs from the command line
-    parser = argparse.ArgumentParser(description="Find max profit from prices.")
-    parser.add_argument(
-        "integers", metavar="N", type=int, nargs="+", help="an integer price"
-    )
-    args = parser.parse_args()
-
-    print(
-        "A profit of ${profit} can be made from the stock prices {prices}.".format(
-            profit=find_max_profit(args.integers), prices=args.integers
-        )
-    )
+  # Loop through the prices
+  for price in prices:
+    # If the price is less than the buy price
+    if price < temp_min:
+      # We will assign it as a temporary minimum and reset the sell 
+      # prices to zero because the sell price has to come after the buy price
+      temp_min = price
+      temp_max = 0
+    # If the price is bigger than the minimum and the maximum prices
+    elif price > temp_min and price > temp_max:
+      # We assign the temporary maximum and we calculate the max_profit_so_far
+      temp_max = price
+      max_profit_so_far = temp_max - temp_min
+    
+  return max_profit_so_far
 
 
-# **** ? this version is not working, find out why
+if __name__ == '__main__':
+  # This is just some code to accept inputs from the command line
+  parser = argparse.ArgumentParser(description='Find max profit from prices.')
+  parser.add_argument('integers', metavar='N', type=int, nargs='+', help='an integer price')
+  args = parser.parse_args()
 
-# def getMaxProfit(arr):
-#   minIdx = 0
-#   maxIdx = 1
-#   currMin = 0
-#   maxProfit = 0
-
-
-#   elements = len(arr)
-#   i = 1
-#   for i in range(elements):
-#     if (arr[i] < arr[currMin]):
-#       currMin = i
-
-#   if (arr[maxIdx] - arr[minIdx] < arr[i] - arr[currMin]):
-#     maxIdx = i
-#     minIdx = currMin
-
-#   maxProfit = arr[maxIdx] - arr[minIdx]
-#   return maxProfit
-
-
-# arr1 = [1050, 270, 1540, 3800, 2]
-# arr2 = [1]
-# print(getMaxProfit(arr1))
-
-
-#*************************
-
-# Returns maximum profit with two transactions on a given
-# list of stock prices price[0..n-1]
-def maxProfit(price,n):
-
-    # Create profit array and initialize it as 0
-    profit = [0]*n
-
-    # Get the maximum profit with only one transaction
-    # allowed. After this loop, profit[i] contains maximum
-    # profit from price[i..n-1] using at most one trans.
-    max_price=price[n-1]
-
-    for i in range(n-2, 0 ,-1):
-
-        if price[i]> max_price:
-            max_price = price[i]
-
-        # we can get profit[i] by taking maximum of:
-        # a) previous maximum, i.e., profit[i+1]
-        # b) profit by buying at price[i] and selling at
-        #    max_price
-        profit[i] = max(profit[i+1], max_price - price[i])
-
-    # Get the maximum profit with two transactions allowed
-    # After this loop, profit[n-1] contains the result
-    min_price=price[0]
-
-    for i in range(1,n):
-
-        if price[i] < min_price:
-            min_price = price[i]
-
-        # Maximum profit is maximum of:
-        # a) previous maximum, i.e., profit[i-1]
-        # b) (Buy, Sell) at (min_price, A[i]) and add
-        #    profit of other trans. stored in profit[i]
-        profit[i] = max(profit[i-1], profit[i]+(price[i]-min_price))
-
-    result = profit[n-1]
-
-    return result
-
-
-price = [1050, 270, 1540, 3800, 2]
-print ("Maximum profit is", maxProfit(price, len(price)))
+  print("A profit of ${profit} can be made from the stock prices {prices}.".format(profit=find_max_profit(args.integers), prices=args.integers))
